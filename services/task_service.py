@@ -3,14 +3,13 @@ DATA_FILE=r"C:\Users\dimpu\Desktop\Project_task_and_expenses\data\data.json"
 from models.task import *
 def add_task(title):
     #reading the existing data
-    data=read_json(DATA_FILE)
+    data=read_json(DATA_FILE) #data is a dictionary
     
     #creating an object to task class
     newTask=Task(title)
     
     # converting to a dictionary
-    taskDict=newTask.to_dict()
-    
+    taskDict=newTask.to_dict() 
     #adding new task to the list
     data["tasks"].append(taskDict)
     
