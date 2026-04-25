@@ -1,16 +1,16 @@
-from models import expenses
+from models.expenses import Expense
 from utils.file_handler import read_json,write_json
-DATA_FILE=r"C:\Users\dimpu\Desktop\Project_task_and_expenses\data\data.json"
+from config import DATA_FILE
 def add_expense(amount,category):
     data=read_json(DATA_FILE)
     try:
-        expense_obj=expenses.Expense(amount,category)
-        expense_dict=expense_obj.to_dict()
+        expense_obj = Expense(amount, category)
     except ValueError:
-        return "Invalid amount. Please enter numeric value"
+        raise ValueError("Invalid amount. Please enter numeric value")
+    expense_dict = expense_obj.to_dict()    
     data["expenses"].append(expense_dict)
     write_json(DATA_FILE,data)
-    return "Expense added successfully"
+    return expense_dict
     
 def get_all_expenses(): #displays all expenses
     data=read_json(DATA_FILE)
@@ -24,7 +24,7 @@ def delete_expense(expense_id): #deletes an expense
     new_length=len(newExpenses)
     
     if old_length==new_length:
-        return "Expense not found"
+        raise ValueError("Expense not found")
     data["expenses"]=newExpenses
     write_json(DATA_FILE,data)
-    return "Expense deleted successfully"
+    return "Expense Deleted Successfully"
