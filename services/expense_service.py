@@ -28,5 +28,3 @@ def delete_expense(expense_id): #deletes an expense
     data["expenses"]=newExpenses
     write_json(DATA_FILE,data)
     return "Expense deleted successfully"
-    
-            

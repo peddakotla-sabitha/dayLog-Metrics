@@ -19,7 +19,7 @@ def add_task(title):
     return taskDict
 def get_all_tasks():
     data=read_json(DATA_FILE)
-    return data
+    return data["tasks"]
 def delete_task(task_id):
     data=read_json(DATA_FILE)
     old_length=len(data["tasks"])
