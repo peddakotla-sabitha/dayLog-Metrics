@@ -1,11 +1,12 @@
-from fastapi import FastAPI,HTTPException
+from fastapi import FastAPI,HTTPException, Depends
 from config import APP_NAME
 from schemas.task_schema import TaskCreate, TaskResponse
 from schemas.expense_schema import ExpenseCreate, ExpenseResponse
 from services.task_service import get_all_tasks, add_task, delete_task, update_task_status
 from services.expense_service import get_all_expenses,delete_expense,add_expense
 import models.task
-from database import engine,Base
+from database import engine,Base,get_db
+from sqlalchemy.orm import Session
 
 #This line tells the Base to look at all models and create them in the DB
 Base.metadata.create_all(bind=engine)
@@ -13,34 +14,38 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title=APP_NAME)
 
-#TASKS SERVICES
+# --- TASKS SERVICES ---
 @app.get("/",)
 def home():
     return {"message": "API Running Successfully"}
 
 
 @app.post("/tasks",summary= "create a new task", status_code=201 , tags= ["create a new task"])
-def create_task(task: TaskCreate):
-    return add_task(task.title)
+# Added db: Session = Depends(get_db)
+def create_task(task: TaskCreate, db: Session = Depends(get_db)):
+    # Pass 'db' to your service
+    return add_task(db,task.title)
 
 
 @app.get("/tasks", summary="getting all tasks", response_model=list[TaskResponse], status_code=200, tags=["getting all tasks"])
-def fetch_tasks():
-    return get_all_tasks()
+def fetch_tasks(db: Session=Depends(get_db)):
+    
+        return get_all_tasks(db)
+
 
 @app.delete("/tasks/{task_id}", summary="Deleting a task", status_code=200, tags=["Deleting a task"])  #created API ENDPOINT(tasks) for deletion
-def remove_task(task_id: str):
+def remove_task(task_id: str, db: Session=Depends(get_db)):
     try:
-        delete_task(task_id)
+        delete_task(db,task_id)
         return {"message": "Task Deleted Successfully"}
     
     except ValueError as e:
         raise HTTPException(status_code=404, detail =str(e))
 
-@app.put("/tasks/{task_id}", summary="updating the task status", tags=["updating the task status"]  )
-def task_status_update(task_id: str):
+@app.put("/tasks/{task_id}", summary="updating the task status", tags=["updating the task status"])
+def task_status_update(task_id: str, db: Session=Depends(get_db)):
     try:
-        updated_task=update_task_status(task_id)
+        updated_task=update_task_status(db,task_id)
         return updated_task
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))

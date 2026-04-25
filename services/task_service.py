@@ -1,44 +1,56 @@
 from utils.file_handler import read_json, write_json
 from config import DATA_FILE
 from models.task import Task
-def add_task(title):
-    #reading the existing data
-    data=read_json(DATA_FILE) #data is a dictionary
+from sqlalchemy.orm import Session
+
+
+
+# 1. GET ALL TASKS
+def get_all_tasks(db: Session):
+    
+    # This is equivalent to "SELECT * FROM tasks"
+    return db.query(Task).all()
+    
+
+
+
+# 2. ADD A NEW TASK
+def add_task(db: Session, title: str):
     
     #creating an object to task class
-    newTask=Task(title)
+    new_task=Task(title = title) 
     
-    # converting to a dictionary
-    taskDict=newTask.to_dict() 
-    #adding new task to the list
-    data["tasks"].append(taskDict)
+    # Add to the "Pending" list (The Shopping Cart)
+    db.add(new_task)  #object relational mapping
     
-    #writing all data to jsonfile
-    write_json(DATA_FILE,data)
+    # Save permanently to Postgres (The Checkout)
+    db.commit()
+    # Refresh to get the ID and default status from the DB
+    db.refresh(new_task)
+    return new_task
+
+
+# 3. DELETE A TASK
+def delete_task(db: Session, task_id: str):
+    # Find the task first
+    task=db.query(Task).filter(Task.id==task_id).first()
+    if not task:
+        raise ValueError(f"Task with id {task_id} not found")
+    db.delete(task)
+    db.commit()
+
+# 4. UPDATE STATUS
+def update_task_status(db: Session, task_id: str):
+    task=db.query(Task).filter(Task.id==task_id).first()
     
-    return taskDict
-def get_all_tasks():
-    data=read_json(DATA_FILE)
-    return data["tasks"]
-def delete_task(task_id):
-    data=read_json(DATA_FILE)
-    old_length=len(data["tasks"])
-    newTasks=[task for task in data["tasks"] if task["id"]!=task_id]
-    new_length=len(newTasks)
-    if old_length==new_length:
-        raise ValueError("Task not found")
-    data["tasks"]=newTasks
-    write_json(DATA_FILE,data)
-    return "Task deleted successfully"
-def update_task_status(task_id):
-    data=read_json(DATA_FILE)
-    for task in data["tasks"]:
-        if task["id"]==task_id:
-            task["status"]="completed"
-            write_json(DATA_FILE, data)
-            return task
+    if not task:
+        raise ValueError(f"Task with ID {task_id} not found")
+    task.status="completed" if task.status=="pending" else "pending"
     
-    raise ValueError("Task not found")
+    db.commit()
+    db.refresh(task)
+    return task
+
     
     
     
