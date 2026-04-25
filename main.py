@@ -4,6 +4,11 @@ from schemas.task_schema import TaskCreate, TaskResponse
 from schemas.expense_schema import ExpenseCreate, ExpenseResponse
 from services.task_service import get_all_tasks, add_task, delete_task, update_task_status
 from services.expense_service import get_all_expenses,delete_expense,add_expense
+import models.task
+from database import engine,Base
+
+#This line tells the Base to look at all models and create them in the DB
+Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI(title=APP_NAME)
