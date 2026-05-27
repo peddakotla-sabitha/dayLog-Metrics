@@ -1,4 +1,5 @@
-from services import task_service,expense_service
+#from services import task_service,expense_service
+
 
 #print(task_service.get_all_tasks(),"\n")
 #print(task_service.delete_task('54c0a3e4-5a9a-4355-a5aa-8fc62708fb55'),"\n")
@@ -14,3 +15,32 @@ from services import task_service,expense_service
 
 # print(expense_service.delete_expense('3daa3c0a-08ae-47d7-9c67-61e8e02bc8'))
 # print(expense_service.get_all_expenses())
+
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from jose import jwt,JWTError
+from config import *
+
+# 1. Create connection
+conn = psycopg2.connect(
+    host="localhost",
+    database="daylog_metrics",
+    user="postgres",
+    password="191036",
+    port="5432"
+)
+
+# 2. Create cursor with dictionary output
+cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+# 3. Execute query
+cursor.execute("SELECT * FROM users")
+
+# 4. Fetch data
+result = cursor.fetchall()
+
+print(result)
+
+# 5. Close connection
+cursor.close()
+conn.close()

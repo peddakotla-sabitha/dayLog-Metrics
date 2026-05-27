@@ -1,11 +1,17 @@
 import uuid
-from datetime import datetime
-class Expense:
-    def __init__(self,amount,category):
-        self.id=str(uuid.uuid4())
-        self.amount=float(amount)
-        self.category=category
-        self.date=datetime.now().strftime("%Y-%m-%d")
-        
-    def to_dict(self):
-        return {"id":self.id, "amount":self.amount, "category":self.category, "date":self.date}
+from datetime import date
+from sqlalchemy import Column, String, DateTime, Float,Date, ForeignKey
+from database import Base
+from sqlalchemy.orm import relationship
+
+class Expense(Base):
+    __tablename__="expenses"
+    
+    id=Column(String, primary_key=True,default=lambda: str(uuid.uuid4()))
+    amount = Column(Float, nullable=False)
+    category=Column(String, nullable=False)
+    date=Column(Date, default=date.today)
+    user_id= Column(String, ForeignKey("users.id"), nullable=False)
+    
+    #relationship
+    user = relationship("User", back_populates="expenses")

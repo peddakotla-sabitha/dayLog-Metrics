@@ -1,4 +1,14 @@
+venv/
+.env/
 __pycache__/
 *.pyc
+.vscode/
+.idea/
+alembic/__pycache__/
+.DS_Store
+Thumbs.db
+*.db
+*.sqlite3
+*.log
 data/data.json
-.env
+
