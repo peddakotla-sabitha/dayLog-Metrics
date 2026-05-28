@@ -3,8 +3,12 @@ from config import APP_NAME
 from routers.task_router import router as task_router
 from routers.expense_router import router as expense_router
 from routers.user_router import router as user_router
+from database import engine, Base
+from models.user import User
+from models.task import Task
+from models.expense import Expense
 
-
+Base.metadata.create_all(bind=engine)
 
 #This line tells the Base to look at all models and create them in the DB
 #Base.metadata.create_all(bind=engine)   --Since you already use Alembic:
