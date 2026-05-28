@@ -4,9 +4,9 @@ from routers.task_router import router as task_router
 from routers.expense_router import router as expense_router
 from routers.user_router import router as user_router
 from database import engine, Base
-from models.user import User
+from models.users import User
 from models.task import Task
-from models.expense import Expense
+from models.expenses import Expense
 
 Base.metadata.create_all(bind=engine)
 
