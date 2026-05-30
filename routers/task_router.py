@@ -44,38 +44,3 @@ def task_status_update(task_id: str, db: Session=Depends(get_db), current_user: 
         raise HTTPException(status_code=404, detail=str(e))
     
     
-@router.get("/test-user-tasks", summary="temporary test user task", tags=["temporary test user task"])
-def test_user_tasks(db: Session=Depends(get_db)):
-    task=db.query(Task).first()
-    if not Task:
-        return []
-    return{
-        "task_title":task.title,
-        "username": task.user.username
-    }
-
-@router.get("/tasks-with-owner")
-def tasks_with_owner(
-    db: Session = Depends(get_db)
-):
-
-    tasks = db.query(Task).all()  #lazy loading
-
-    data = []
-
-    for task in tasks:
-
-        data.append({
-            "title": task.title,
-            "owner": task.user.username
-        })
-
-    return data
-
-@router.get("/tasks_with_user")
-def tasks_with_user(db: Session=Depends(get_db)):
-    tasks=db.query(Task).options(joinedload(Task.user)).all()  #eager loading --joinedload
-    data=[]
-    for task in tasks:
-        data.append({"task":task.title,"status":task.status,"owner":task.user.username})
-    return data

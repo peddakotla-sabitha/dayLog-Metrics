@@ -31,13 +31,7 @@ def remove_expense(expense_id: str, db: Session=Depends(get_db), current_user: U
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     
-@router.get("/expenses-with-user")
-def expenses_with_user(db: Session = Depends(get_db)):
-    expenses=db.query(Expense).options(joinedload(Expense.user)).all()
-    data=[]
-    for expense in expenses:
-        data.append({"category":expense.category,"amount":expense.amount,"owner":expense.user.username})
-    return data
+
         
         
 
