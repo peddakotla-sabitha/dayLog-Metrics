@@ -12,4 +12,9 @@ class UserBasic(BaseModel):
     username: str 
     class Config:
         from_attributes=True
+class UserDashboard(BaseModel):
+    total_tasks: int
+    completed_tasks: int
+    pending_tasks: int
+    total_expenses: float
     

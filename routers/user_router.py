@@ -1,9 +1,9 @@
 from fastapi import HTTPException, Depends, APIRouter
-from schemas.user_schema import UserCreate
-from database import engine,Base,get_db
+from schemas.user_schema import UserCreate,UserDashboard
+from database import get_db
 from sqlalchemy.orm import Session
-from services.user_service import create_user,authenticate_user
-from utils.auth import create_access_token
+from services.user_service import create_user,authenticate_user, get_dashboard
+from utils.auth import create_access_token, get_current_user
 from fastapi.security import OAuth2PasswordRequestForm
 from models.users import User
 
@@ -54,4 +54,11 @@ def auth_user(
         raise HTTPException(status_code=401, detail=str(e))
     
     
-
+# Dashboard
+@router.get("/dashboard",response_model=UserDashboard, summary="User Dashboard",tags=["Dashboard"])
+def user_dashboard(db: Session=Depends(get_db),current_user: User=Depends(get_current_user)):
+    try:
+        users_summary=get_dashboard(db,current_user.id)
+        return users_summary
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))

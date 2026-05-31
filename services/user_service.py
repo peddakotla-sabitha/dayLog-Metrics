@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session,joinedload
 from sqlalchemy import or_
 from models.users import User
 from utils.security import hash_password,verify_password
@@ -30,4 +30,14 @@ def authenticate_user(db: Session, email: str, password: str):
         raise ValueError("Invalid Credentials")
     return existing_user
 
-    
+
+def get_dashboard(db: Session,user_id: str):
+    user=db.query(User).filter(User.id==user_id).options(joinedload(User.tasks),joinedload(User.expenses)).first()
+    if not user:
+        raise ValueError("user not found")
+    total_tasks=len(user.tasks)
+    completed_tasks=sum(1 for task in user.tasks if task.status=="completed")
+    return {"total_tasks":total_tasks,
+            "completed_tasks": completed_tasks,
+            "pending_tasks":total_tasks-completed_tasks,
+            "total_expenses":sum(expense.amount for expense in user.expenses)}

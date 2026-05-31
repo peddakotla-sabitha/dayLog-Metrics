@@ -4,6 +4,8 @@ from schemas.user_schema import UserBasic
 
 class TaskCreate(BaseModel):
     title: str
+class TaskUpdate(BaseModel):
+    title: str
 class TaskResponse(BaseModel):
     id: str
     title: str
@@ -13,4 +15,4 @@ class TaskResponse(BaseModel):
     user: UserBasic
 
     class Config:
-        from_attributes = True # This allows Pydantic to read SQLAlchemy objects
+        from_attributes = True   # This allows Pydantic to read SQLAlchemy objects

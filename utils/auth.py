@@ -36,8 +36,6 @@ def verify_access_token(token: str):
         # Token invalid / expired
         raise ValueError("Invalid or Expired token")
 
-oauth2_scheme=OAuth2PasswordBearer(tokenUrl="login")
-
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 # This tells FastAPI:
 # "Get token from Authorization header (Bearer <token>)"

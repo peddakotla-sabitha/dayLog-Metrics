@@ -1,7 +1,7 @@
 from utils.file_handler import read_json, write_json
 from config import DATA_FILE
 from models.task import Task
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 
 
@@ -58,6 +58,25 @@ def update_task_status(db: Session, task_id: str,user_id: str):
     db.refresh(task)
     return task
 
+#5.UPDATE TASK TITLE
+def update_task(db:Session, task_id: str, new_title: str, user_id: str):
+    task=db.query(Task).options(joinedload(Task.user)).filter(Task.id==task_id, Task.user_id==user_id).first()
+    if not task:
+        raise ValueError(f"Task not found")
+    if task.title==new_title:
+        raise ValueError("New title is same as current title")
+    task.title = new_title
+    db.commit()
+    db.refresh(task)
+    return task
+
+
+def details_task(db: Session, user_id: str):
+    tasks=db.query(Task).options(joinedload(Task.user)).filter(Task.user_id==user_id).all()
+    if not tasks:
+        raise ValueError("Tasks not found")
+    return tasks
+    
     
     
     
